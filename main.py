@@ -37,10 +37,6 @@ async def callback(request: Request):
 def handle_message(event):
     msg_content = event.message.text
     if '1000' == msg_content:
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="I got you!")
-        )
 
         replied_to_user_id = event.reply_to_message.user_id
         replied_to_user_profile = line_bot_api.get_profile(replied_to_user_id)
@@ -65,7 +61,7 @@ def handle_message(event):
         reply_text = "Good morning, Master!"
         
     elif "Bot version" == msg_content:
-        reply_text = "v1.2"
+        reply_text = "v1.3"
 
     line_bot_api.reply_message(
             event.reply_token,
