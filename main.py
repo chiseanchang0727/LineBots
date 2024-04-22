@@ -4,6 +4,8 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
 import sqlite3
+from utils import record_info
+
 
 app = Flask(__name__)
 
@@ -43,16 +45,7 @@ def handle_message(event):
         record_info(user_send, tagged_user, msg_content)
 
 
-def record_info(user_send, tagged_user, msg_content):
-    conn = sqlite3.connect('line_bot.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO messages (user_id, message, tagged_users) VALUES (?, ?, ?)",
-            (user_send, msg_content, ','.join(tagged_user)))
-    
 
-    # sql_insert = "INSERT INTO subpoena (user_send, msg_content, tagged_user) VALUES (?, ?, ?)"
-
-    
 
 if __name__ == "__main__":
 
