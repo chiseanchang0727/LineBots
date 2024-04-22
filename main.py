@@ -36,7 +36,7 @@ async def callback(request: Request):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg_content = event.message.text
-    if '1000' in msg_content:
+    if '1000' == msg_content:
         line_bot_api.reply_message(
             event.reply_token,
             TextSendMessage(text="I got you!")
@@ -45,6 +45,12 @@ def handle_message(event):
         replied_to_user_id = event.reply_to_message.user_id
         replied_to_user_profile = line_bot_api.get_profile(replied_to_user_id)
         replied_to_user_name = replied_to_user_profile.display_name
+        
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=f"I got {replied_to_user_name}!")
+        )
+
         
         record_info(event.source.user_id, replied_to_user_name, msg_content)
         confirmation_message = f"1000 is sent to {replied_to_user_name}"
@@ -59,7 +65,7 @@ def handle_message(event):
         reply_text = "Good morning, Master!"
         
     elif "Bot version" == msg_content:
-        reply_text = "v1.1"
+        reply_text = "v1.2"
 
     line_bot_api.reply_message(
             event.reply_token,
