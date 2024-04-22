@@ -48,5 +48,14 @@ def view_table_content_with_headers(table_name):
     finally:
         conn.close()
 
+def clear_database():
+    conn = sqlite3.connect('line_bot.db')
+    c = conn.cursor()
+    # Assuming you have a table called 'messages'
+    c.execute("DELETE FROM messages")
+    conn.commit()
+    conn.close()
+    return "Database cleared successfully."
+
 
 # summary

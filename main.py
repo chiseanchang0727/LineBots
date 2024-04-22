@@ -5,7 +5,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
-from utils import record_info
+from utils import record_info, clear_database
 
 app = FastAPI()
 
@@ -37,14 +37,33 @@ async def callback(request: Request):
 def handle_message(event):
     msg_content = event.message.text
     if '1000' in msg_content:
-        user_send = event.source.user_id
-        tagged_user = [word for word in msg_content.split() if word.startswith('@')]  
-        record_info(user_send, tagged_user, msg_content)
-
-        confirmation_message = f"1000 is sent to {tagged_user}"
         line_bot_api.reply_message(
             event.reply_token,
-            TextSendMessage(text=confirmation_message)
+            TextSendMessage(text="I got you!")
+        )
+
+        replied_to_user_id = event.reply_to_message.user_id
+        replied_to_user_profile = line_bot_api.get_profile(replied_to_user_id)
+        replied_to_user_name = replied_to_user_profile.display_name
+        
+        record_info(event.source.user_id, replied_to_user_name, msg_content)
+        confirmation_message = f"1000 is sent to {replied_to_user_name}"
+        reply_text=confirmation_message   
+
+            
+    # elif "!bot, clear the database" == msg_content:
+    #     result_message = clear_database()
+    #     reply_text=result_message
+    
+    elif "!bot, Hi" == msg_content:
+        reply_text = "Good morning, Master!"
+        
+    elif "Bot version" == msg_content:
+        reply_text = "v1.1"
+
+    line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=reply_text)
         )
 
 if __name__ == "__main__":
