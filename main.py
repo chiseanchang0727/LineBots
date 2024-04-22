@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, HTTPException, status
 from fastapi.responses import JSONResponse
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import json
 from utils import record_info
 
@@ -40,6 +40,12 @@ def handle_message(event):
         user_send = event.source.user_id
         tagged_user = [word for word in msg_content.split() if word.startswith('@')]  
         record_info(user_send, tagged_user, msg_content)
+
+        confirmation_message = f"1000 is sent to {tagged_user}"
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=confirmation_message)
+        )
 
 if __name__ == "__main__":
 
