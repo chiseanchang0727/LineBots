@@ -40,6 +40,10 @@ def handle_message(event):
         # timestamp = event.timestamp
         line_bot_api.reply_message(
             event.reply_token,
+            TextSendMessage(text=f"We are here.")
+        )
+        line_bot_api.reply_message(
+            event.reply_token,
             TextSendMessage(text=f"this one: {event.message.quotedMessageId}")
         )
         user_id = event.source.user_id
@@ -75,7 +79,7 @@ def handle_message(event):
         reply_text = "Good morning, Master!"
         
     elif "Bot version" == msg_content:
-        reply_text = "v1.6"
+        reply_text = "v1.7"
 
     line_bot_api.reply_message(
             event.reply_token,
