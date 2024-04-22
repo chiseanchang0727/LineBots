@@ -75,7 +75,7 @@ def handle_message(event):
         reply_text = "Good morning, Master!"
         
     elif "Bot version" == msg_content:
-        reply_text = "v1.5"
+        reply_text = "v1.6"
 
     line_bot_api.reply_message(
             event.reply_token,
