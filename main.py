@@ -38,7 +38,10 @@ def handle_message(event):
     msg_content = event.message.text
     if '1000' == msg_content and event.message.quotedMessageId:
         # timestamp = event.timestamp
-        
+        line_bot_api.reply_message(
+            event.reply_token,
+            TextSendMessage(text=f"I got you!")
+        )
         user_id = event.source.user_id
         
         user_name = line_bot_api.get_profile(user_id)
