@@ -1,52 +1,46 @@
-from flask import Flask, request, abort
+import uvicorn
+from fastapi import FastAPI, Request, HTTPException, status
+from fastapi.responses import JSONResponse
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
-from linebot.models import MessageEvent, TextMessage, TextSendMessage
+from linebot.models import MessageEvent, TextMessage
 import json
-import sqlite3
 from utils import record_info
 
+app = FastAPI()
 
-app = Flask(__name__)
-
+# Load configurations
 with open('./configs.json') as file:
     configs = json.load(file)
 
-line_bot_api = configs['channel_access_token']
-handler = configs['channel_secret']
+line_bot_api = LineBotApi(configs['channel_access_token'])
+handler = WebhookHandler(configs['channel_secret'])
 
-
-
-@app.route("/callback", methods=['POST'])
-def callback():
+@app.post("/callback")
+async def callback(request: Request):
     # Get X-Line-Signature header value
-    signature = request.headers['X-Line-Signature']
+    signature = request.headers.get('x-line-signature')
 
     # Get request body as text
-    body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    body = await request.body()
+    body_text = body.decode('utf-8')
 
     # Handle webhook body
     try:
-        handler.handle(body, signature)
+        handler.handle(body_text, signature)
     except InvalidSignatureError:
-        abort(400)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
 
-    return 'OK'
+    return JSONResponse(content={"detail": "OK"})
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     msg_content = event.message.text
     if '1000' in msg_content:
         user_send = event.source.user_id
-
-        tagged_user = [word for word in msg_content.split() if word.startwith('@')]
-
+        tagged_user = [word for word in msg_content.split() if word.startswith('@')]  
         record_info(user_send, tagged_user, msg_content)
-
-
-
 
 if __name__ == "__main__":
 
-    2 
+    uvicorn.run(app, host="0.0.0.0", port=8002)
